@@ -1,47 +1,65 @@
-// Step 1: Import required modules
 const http = require('http');
+const fs = require('fs'); 
 
-// Step 2: Set up port
+global.DEBUG = true;
+
 const port = 3000;
 
-// Step 3: Create an HTTP server
 const server = http.createServer((request, response) => {
-  // Step 4: Use request.url to determine the requested route
+  if (DEBUG) console.log('Request URL:' , request.url);
+  let path = './views/';
   switch (request.url) {
-    // Step 5: Add console.log for each case
     case '/about':
-      console.log('Handling route: /about');
-      // Perform actions specific to the /about route
-      response.end('About Page');
+      if (DEBUG) console.log('Handling route: /about');
+      path += 'about.html'
+      if (DEBUG) console.log('Path:' , path);
+      fetchFile(path,response);
       break;
     case '/contact':
-      console.log('Handling route: /contact');
-      // Perform actions specific to the /contact route
-      response.end('Contact Page');
+      if (DEBUG) console.log('Handling route: /contact');
+      path += 'contact.html'
+      if (DEBUG) console.log('Path:' , path);
+      fetchFile(path,response);
       break;
     case '/products':
-      console.log('Handling route: /products');
-      // Perform actions specific to the /products route
-      response.end('Products Page');
+      if (DEBUG) console.log('Handling route: /products');
+      path += 'products.html'
+      if (DEBUG) console.log('Path:' , path);
+      fetchFile(path,response);
       break;
     case '/subscribe':
-      console.log('Handling route: /subscribe');
-      // Perform actions specific to the /subscribe route
-      response.end('Subscribe Page');
+      if (DEBUG) console.log('Handling route: /subscribe');
+      path += 'subscribe.html'
+      if (DEBUG) console.log('Path:' , path);
+      fetchFile(path,response);
       break;
     case '/':
-      console.log('Handling route: /');
-      // Perform actions specific to the root route
-      response.end('Home Page');
+      if (DEBUG) console.log('Handling route: /');
+      path += 'index.html'
+      if (DEBUG) console.log('Path:' , path);
+      fetchFile(path,response);
       break;
     default:
-      console.log(`404 Not Found: ${request.url}`);
+      if (DEBUG) console.log(`404 Not Found: ${request.url}`);
       response.writeHead(404, { 'Content-Type': 'text/plain' });
       response.end('404 Not Found');
   }
 });
 
-// Step 7: Start the server
+function fetchFile(fileName, response) {
+  fs.readFile(fileName, (error, content) => {
+    if(error) {
+      response.writeHead(500, { 'Content-Type': 'text/plain' });
+      response.end('500 Internal Server Error');
+    } else {
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+      response.end(content, 'utf-8');
+    }
+  });
+};
+
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
