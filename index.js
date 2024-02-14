@@ -1,23 +1,23 @@
 const http = require('http');
 const path = require('path');
+const route = require('./routes.js');
 
-const EventEmitter = require('events');
-class MyEmitter extends EventEmitter{};
-const myEmitter = new MyEmitter();
+const myEmitter = require('./logEvents.js');
+
 
 global.DEBUG = true;
 const port = 3000;
 
-myEmitter.on('route', (url) => {
-  const d = new Date();
-  if(DEBUG) console.log(`Route Event on: ${url} at ${d}`);
-  if(!fs.existsSync(path.join(__dirname, 'logs'))) {
-    fs.mkdirSync(path.join(__dirname, 'logs'));
-  }
-  fs.appendFile(path.join(__dirname, 'logs', 'route.log'), `Route Event on: ${url} at ${d}\n`, (err) => {
-    if(err) throw err;
-  });
-});
+// myEmitter.on('route', (url) => {
+//   const d = new Date();
+//   if(DEBUG) console.log(`Route Event on: ${url} at ${d}`);
+//   if(!fs.existsSync(path.join(__dirname, 'logs'))) {
+//     fs.mkdirSync(path.join(__dirname, 'logs'));
+//   }
+//   fs.appendFile(path.join(__dirname, 'logs', 'route.log'), `Route Event on: ${url} at ${d}\n`, (err) => {
+//     if(err) throw err;
+//   });
+// });
 
 //Every time a file was successfully read and write a message to the console.
 myEmitter.on('fileReadSuccess', (fileName) => {
@@ -31,43 +31,52 @@ myEmitter.on('fileNotAvailable', (fileName) => {
 
 
 const server = http.createServer((request, response) => {
+  if (request.url === '/favicon.ico') {
+    // Ignore favicon.ico requests
+    response.writeHead(204, {'Content-Type': 'image/x-icon'});
+    response.end();
+    return;
+  }
   if (DEBUG) console.log('Request URL:' , request.url);
   let path = './views/';
   switch (request.url) {
     case '/about':
-      myEmitter.emit('route' , path);
+      // myEmitter.emit('route' , path);
       path += 'about.html'
       if (DEBUG) console.log('Path:' , path);
       route.aboutPage(path, response);
       break;
     case '/contact':
-      myEmitter.emit('route' , path);
+      // myEmitter.emit('route' , path);
       path += 'contact.html'
       if (DEBUG) console.log('Path:' , path);
       route.contactPage(path, response);
       break;
     case '/products':
-      myEmitter.emit('route' , path);
+      // myEmitter.emit('route' , path);
       path += 'products.html'
       if (DEBUG) console.log('Path:' , path);
       route.productsPage(path, response);
       break;
     case '/subscribe':
-      myEmitter.emit('route' , path);
+      // myEmitter.emit('route' , path);
       path += 'subscribe.html'
       if (DEBUG) console.log('Path:' , path);
       route.subscribePage(path, response);
       break;
     case '/':
-      myEmitter.emit('route' , path);
+      // myEmitter.emit('route' , path);
       path += 'index.html'
       if (DEBUG) console.log('Path:' , path);
       route.indexPage(path, response);
       break;
     default:
-      if (DEBUG) console.log(`404 Not Found: ${request.url}`);
+      let message = `404 Not Found: ${request.url}`;
+      if(DEBUG) console.log(message);
+      myEmitter.emit('error', message);
       response.writeHead(404, { 'Content-Type': 'text/plain' });
       response.end('404 Not Found');
+      break;
   }
 });
 
