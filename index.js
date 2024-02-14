@@ -8,16 +8,6 @@ const myEmitter = require('./logEvents.js');
 global.DEBUG = true;
 const port = 3000;
 
-// myEmitter.on('route', (url) => {
-//   const d = new Date();
-//   if(DEBUG) console.log(`Route Event on: ${url} at ${d}`);
-//   if(!fs.existsSync(path.join(__dirname, 'logs'))) {
-//     fs.mkdirSync(path.join(__dirname, 'logs'));
-//   }
-//   fs.appendFile(path.join(__dirname, 'logs', 'route.log'), `Route Event on: ${url} at ${d}\n`, (err) => {
-//     if(err) throw err;
-//   });
-// });
 
 //Every time a file was successfully read and write a message to the console.
 myEmitter.on('fileReadSuccess', (fileName) => {
