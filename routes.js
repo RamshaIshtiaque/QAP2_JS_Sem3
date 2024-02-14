@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const myEmitter = require('./logEvents.js');
 
 function indexPage(path, response) {
     myEmitter.emit('route', path);
